@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -76,6 +78,36 @@ func getRootfsPath(config containerConfig) string {
 	return rootfs
 }
 
+func checkEnforceUUID(config *nvidiaConfig) bool {
+	devices := config.Devices
+
+	if len(devices) == 0 {
+		return false
+	}
+
+	if devices == "all" {
+		return false
+	}
+
+	if devices == "none" || devices == "void" {
+		return true
+	}
+
+	gpus := strings.Split(devices, ",")
+	for _, gpu := range gpus {
+		uuids := strings.Split(gpu, "GPU-")
+		if len(uuids) != 2 {
+			return false
+		}
+
+		if _, err := uuid.Parse(uuids[1]); err != nil {
+			return false
+		}
+	}
+
+	return true
+}
+
 func doPrestart() {
 	var err error
 
@@ -89,6 +121,10 @@ func doPrestart() {
 	nvidia := container.Nvidia
 	if nvidia == nil {
 		// Not a GPU container, nothing to do.
+		return
+	}
+
+	if hook.EnforceUUID && !checkEnforceUUID(nvidia) {
 		return
 	}
 
