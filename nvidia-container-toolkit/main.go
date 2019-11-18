@@ -81,15 +81,11 @@ func getRootfsPath(config containerConfig) string {
 func checkEnforceUUID(config *nvidiaConfig) bool {
 	devices := config.Devices
 
-	if len(devices) == 0 {
-		return false
-	}
-
 	if devices == "all" {
 		return false
 	}
 
-	if devices == "none" || devices == "void" {
+	if devices == "none" || devices == "void" || devices == "" {
 		return true
 	}
 
