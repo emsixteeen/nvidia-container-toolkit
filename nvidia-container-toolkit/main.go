@@ -78,9 +78,28 @@ func getRootfsPath(config containerConfig) string {
 	return rootfs
 }
 
-func checkEnforceUUID(config *nvidiaConfig) bool {
-	devices := config.Devices
+func checkEnforceUUID(container containerConfig, hook HookConfig) bool {
+	env := container.Env
+	if hook.EnforceUUIDWhitelist != nil {
+		kv := strings.Split(*hook.EnforceUUIDWhitelist, "=")
+		if len(kv) == 2 {
+			key := kv[0]
+			val := kv[1]
 
+			if envVal, ok := env[key]; ok {
+				if envVal == val {
+					return true
+				}
+			}
+		}
+	}
+
+	config := container.Nvidia
+	if config == nil {
+		return true
+	}
+
+	devices := config.Devices
 	if devices == "all" {
 		return false
 	}
@@ -120,7 +139,7 @@ func doPrestart() {
 		return
 	}
 
-	if hook.EnforceUUID && !checkEnforceUUID(nvidia) {
+	if hook.EnforceUUID && !checkEnforceUUID(container, hook) {
 		return
 	}
 

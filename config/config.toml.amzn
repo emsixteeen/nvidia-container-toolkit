@@ -1,6 +1,7 @@
 disable-require = false
 #swarm-resource = "DOCKER_RESOURCE_GPU"
 #enforce-uuid = false
+#enforce-uuid-whitelist = "ENV_KEY=value"
 
 [nvidia-container-cli]
 #root = "/run/nvidia/driver"

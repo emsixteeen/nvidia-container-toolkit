@@ -32,18 +32,20 @@ type CLIConfig struct {
 }
 
 type HookConfig struct {
-	DisableRequire bool    `toml:"disable-require"`
-	SwarmResource  *string `toml:"swarm-resource"`
-	EnforceUUID    bool    `toml:"enforce-uuid"`
+	DisableRequire       bool    `toml:"disable-require"`
+	SwarmResource        *string `toml:"swarm-resource"`
+	EnforceUUID          bool    `toml:"enforce-uuid"`
+	EnforceUUIDWhitelist *string `toml:"enforce-uuid-whitelist"`
 
 	NvidiaContainerCLI CLIConfig `toml:"nvidia-container-cli"`
 }
 
 func getDefaultHookConfig() (config HookConfig) {
 	return HookConfig{
-		DisableRequire: false,
-		SwarmResource:  nil,
-		EnforceUUID:    false,
+		DisableRequire:       false,
+		SwarmResource:        nil,
+		EnforceUUID:          false,
+		EnforceUUIDWhitelist: nil,
 		NvidiaContainerCLI: CLIConfig{
 			Root:        nil,
 			Path:        nil,
